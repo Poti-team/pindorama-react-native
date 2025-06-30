@@ -203,7 +203,7 @@ export default function Auth() {
 
   if (!userSession && login) {
     return (
-      <View style={styles.container}>
+      <View style={styles.conteudo}>
         <Text style={styles.title}>Login</Text>
         <TextInput
           style={styles.input}
