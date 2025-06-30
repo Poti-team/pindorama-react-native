@@ -1,6 +1,7 @@
 import { StyleSheet, Dimensions } from 'react-native';
 
 const screenWidth = Dimensions.get('window').width;
+const screenHeight = Dimensions.get('window').height;
 
 export const styles = StyleSheet.create({
   container: {
@@ -32,6 +33,7 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     marginTop: 8,
     fontFamily: 'IrishGrover-Regular', // Use o nome da fonte carregada
+    color: '#642c08'
   },
   input: {
     width: '100%',
@@ -89,5 +91,24 @@ export const styles = StyleSheet.create({
   placa: {
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  popUpContainer: {
+    position: 'absolute',
+    width: screenWidth,
+    height: screenHeight + 40,
+    backgroundColor: '#95604650',
+    top: 0,
+    left: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000,
+  },
+  popUpDisplay: {
+    width: screenWidth - 80,
+    padding: 32,
+    backgroundColor: '#956046',
+    borderWidth: 4,
+    borderColor: '#642C08',
+    borderRadius: 20,
   }
 });

@@ -25,7 +25,6 @@ export default function Auth() {
   }, [userSession, ready]);
 
   useEffect(() => {
-    carregarDados();
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUserSession(session);
@@ -41,9 +40,13 @@ export default function Auth() {
   }, []);
 
   useEffect(() => {
-    if (userSession) {
-        carregarDadosUsuario();
-    }
+    const fetchData = async () => {
+      if (userSession) {
+        await carregarDadosUsuario();
+        await carregarDados();
+      }
+    };
+    fetchData();
   }, [userSession]);
 
   const home = () => {
@@ -123,37 +126,57 @@ export default function Auth() {
     }
   }};
 
-  const carregarDados = async () => {
-    try {
-      setLoadingData(true);
+ const carregarDados = async () => {
+  try {
+    setLoadingData(true);
 
-      const dadosFixosJaBaixados = await AsyncStorage.getItem('dados_carregados');
+    console.log('Iniciando verificação do cache local...');
+    await AsyncStorage.setItem('dados_carregados', 'false'); // Reseta o estado de carregamento
+    const dadosFixosJaBaixados = await AsyncStorage.getItem('dados_carregados');
 
-      if (dadosFixosJaBaixados !== 'true') {
-        const [Fase, Conquista, Categoria, Pergunta, Item, Pagina] = await Promise.all([
-          supabase.from('Fase').select('*'),
-          supabase.from('Conquista').select('*'),
-          supabase.from('Categoria').select('*'),
-          supabase.from('Pergunta').select('*'),
-          supabase.from('Item').select('*'),
-          supabase.from('Pagina').select('*'),
-        ]);
-
-        await AsyncStorage.setItem('Fase', JSON.stringify(Fase.data));
-        await AsyncStorage.setItem('Conquista', JSON.stringify(Conquista.data));
-        await AsyncStorage.setItem('Categoria', JSON.stringify(Categoria.data));
-        await AsyncStorage.setItem('Pergunta', JSON.stringify(Pergunta.data));
-        await AsyncStorage.setItem('Item', JSON.stringify(Item.data));
-        await AsyncStorage.setItem('Pagina', JSON.stringify(Pagina.data));
-        await AsyncStorage.setItem('dados_carregados', 'true');
-      }
-
-    } catch (error) {
-      Alert.alert('Erro ao carregar dados', (error as Error).message);
-    } finally {
-      setLoadingData(false);
+    if (dadosFixosJaBaixados === 'true') {
+      console.log('Dados já estavam armazenados. Pulando download.');
+      return;
     }
-  };
+
+    console.log('Baixando dados do Supabase...');
+    const [Fase, Conquista, Categoria, Pergunta, Item, Pagina] = await Promise.all([
+      supabase.from('Fase').select('*'),
+      supabase.from('Conquista').select('*'),
+      supabase.from('Categoria').select('*'),
+      supabase.from('Pergunta').select('*'),
+      supabase.from('Item').select('*'),
+      supabase.from('Pagina').select('*'),
+    ]);
+
+    // Verifica se todos os dados vieram corretamente
+    if (
+      Fase.error || Conquista.error || Categoria.error ||
+      Pergunta.error || Item.error || Pagina.error
+    ) {
+      throw new Error('Erro ao buscar dados fixos do Supabase');
+    }
+
+    console.log('Salvando dados localmente...');
+    await AsyncStorage.multiSet([
+      ['Fase', JSON.stringify(Fase.data)],
+      ['Conquista', JSON.stringify(Conquista.data)],
+      ['Categoria', JSON.stringify(Categoria.data)],
+      ['Pergunta', JSON.stringify(Pergunta.data)],
+      ['Item', JSON.stringify(Item.data)],
+      ['Pagina', JSON.stringify(Pagina.data)],
+      ['dados_carregados', 'true'],
+    ]);
+
+    console.log('Dados salvos com sucesso!');
+  } catch (error) {
+    console.error('Erro ao carregar dados fixos:', error);
+    Alert.alert('Erro ao carregar dados', (error as Error).message);
+  } finally {
+    setLoadingData(false);
+  }
+};
+
 
   const carregarDadosUsuario = async () => {
     try {
@@ -234,9 +257,8 @@ export default function Auth() {
             setLoading(true)
             await carregarDados();
             await carregarDadosUsuario();
-            Alert.alert('Aviso', 'Você está jogando como convidado. Seus dados não serão salvos.');
+            await AsyncStorage.setItem('Usuario', JSON.stringify({ id: 1, username: 'convidado'}));
             setUserSession(null);
-            await AsyncStorage.setItem('Usuario', JSON.stringify({ id: '0', username: 'convidado'}));
             setLoading(false);
             router.replace('/home');
           }}>
