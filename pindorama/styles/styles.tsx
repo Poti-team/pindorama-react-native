@@ -1,21 +1,37 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Dimensions } from 'react-native';
+
+const screenWidth = Dimensions.get('window').width;
 
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#FFF9E4',
+    padding: 0,
+    margin: 0,
+    width: screenWidth,
+  },
+  conteudo: {
+    paddingTop: 80,
+    flex: 1,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    paddingHorizontal: 40,
+    margin: 0,
+    width: screenWidth,
+    gap: 40,
   },
   title: {
-    fontSize: 26,
-    fontWeight: 'bold',
-    marginBottom: 24,
+    fontSize: 40,
+    fontFamily: 'IrishGrover-Regular', // Use o nome da fonte carregada
+    color: '#642C08',
+    textAlign: 'left',
   },
   text: {
     fontSize: 16,
-    marginTop: 20,
+    marginTop: 8,
+    fontFamily: 'IrishGrover-Regular', // Use o nome da fonte carregada
   },
   input: {
     width: '100%',
@@ -32,27 +48,46 @@ export const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 8,
   },
-  logoutButton: {
-    backgroundColor: '#ef4444',
-  },
   buttonText: {
     color: '#fff',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontFamily: 'IrishGrover-Regular', // Opcional
   },
-  conteudo: {
-    flex: 1,
+  div: {
     width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  menu: {
+  row: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+  },
+  menu: {
+    width : screenWidth,
+    flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#EACA92',
     paddingVertical: 10,
-    borderTopWidth: 5,
-    borderColor: '#642C08',
+    gap: 40,
+    paddingHorizontal: 40,
   },
+  absolute: {
+    position: 'absolute',
+    zIndex: 0,
+  },
+  placa_home: {
+     flex: 3,
+     width: '100%',
+     justifyContent:
+     'flex-start',
+     alignItems: 'center',
+     gap: 10,
+     paddingBottom: 150,
+  },
+  placa: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  }
 });

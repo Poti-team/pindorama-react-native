@@ -12,27 +12,43 @@ export default function LayoutComMenu() {
 
   return (
     <View style={styles.container}>
-      {/* Conteúdo da tela */}
-      <View style={styles.conteudo}>
+      <View style={styles.container}>
+        <View style={[styles.absolute,{bottom: 0, left: 0}]}>
+          <Image source={require('@/assets/images/sol.png')}/>
+        </View>
+        <View style={[styles.absolute, { top: 0, right: -25 }]}>
+          <Image
+            source={require('@/assets/images/sol.png')}
+            style={{ transform: [{ rotate: '180deg' }] }}
+          />
+        </View>
+        {/* Conteúdo da tela */}
         <Slot />
       </View>
 
+
+
       {/* Menu inferior */}
       <View style={styles.menu}>
+
+        <View style={[styles.absolute,{top: -13}]}>
+          <Image source={require('@/assets/images/detalhe_menu.png')}/>
+        </View>
+
         <BotaoMenu
-          icone={require('@/assets/images/mapa.png')}
+          icone={require('@/assets/images/icons/mapa.png')}
           texto="Mapa"
           ativo={pathname === '/tabs/mapa'}
           onPress={() => irPara('/tabs/mapa')}
         />
         <BotaoMenu
-          icone={require('@/assets/images/conquistas.png')}
+          icone={require('@/assets/images/icons/conquistas.png')}
           texto="Conquistas"
           ativo={pathname === '/tabs/conquistas'}
           onPress={() => irPara('/tabs/conquistas')}
         />
         <BotaoMenu
-          icone={require('@/assets/images/perfil.png')}
+          icone={require('@/assets/images/icons/perfil.png')}
           texto="Perfil"
           ativo={pathname.startsWith('/tabs/perfil')}
           onPress={() => irPara('/tabs/perfil')}
@@ -51,11 +67,11 @@ type BotaoMenuProps = {
 
 function BotaoMenu({ icone, texto, ativo, onPress }: BotaoMenuProps) {
   return (
-    <Pressable onPress={onPress}>
+    <Pressable onPress={onPress} style={{flex: 1, alignItems: 'center', justifyContent: 'center', paddingTop: 10}}>
       <Image
         source={icone}
         style={[
-          { height: 30, marginBottom: 5 },
+          {height: 54, resizeMode: 'contain'},
         ]}
       />
       <Text style={[styles.text, { color: '#642C08'}]}>
