@@ -3,12 +3,15 @@ import { Slot, useRouter, usePathname } from 'expo-router';
 import { styles } from '@/styles/styles';
 
 export default function LayoutComMenu() {
-  const router = useRouter();
-  const pathname = usePathname();
 
-  const irPara = (rota: Parameters<typeof router.push>[0]) => {
-    if (pathname !== rota) router.push(rota);
-  };
+    const router = useRouter();
+    const pathname = usePathname();
+  
+      const irPara = (rota: Parameters<typeof router.push>[0]) => {
+          if (rota !== pathname) {
+              router.push(rota);
+          }
+      }
 
   return (
     <View style={styles.container}>
