@@ -166,7 +166,7 @@ const animatedIndex = useRef(new Animated.Value(0)).current;
                     <Text style={[styles.text, {fontSize: 20}]}>{'Jogar'}</Text>
                 </Pressable>
                 <Pressable onPress={handleNext} disabled={index === fases.length - 1}>
-                    <Image source={require('@/assets/images/seta_carrossel.png')} style={{ opacity: index === fases.length - 1 ? 0.3 : 1 }} />
+                    <Image source={require('@/assets/images/seta_carrossel.png')} style={{ opacity: index === fases.length - 1 ? 0.3 : 1, padding: 4}} />
                 </Pressable>
             </View>
       </View>
