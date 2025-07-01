@@ -31,7 +31,6 @@ export const styles = StyleSheet.create({
   },
   text: {
     fontSize: 16,
-    marginTop: 8,
     fontFamily: 'IrishGrover-Regular', // Use o nome da fonte carregada
     color: '#642c08'
   },
@@ -45,13 +44,15 @@ export const styles = StyleSheet.create({
     fontSize: 16,
   },
   button: {
-    backgroundColor: '#3b82f6',
+    backgroundColor: '#EACA92',
     paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 8,
+    paddingVertical: 8,
+    borderColor: '#AC7641',
+    borderWidth: 3,
+    borderRadius: 2,
   },
   buttonText: {
-    color: '#fff',
+    color: '#642c08',
     fontSize: 16,
     fontFamily: 'IrishGrover-Regular', // Opcional
   },
@@ -71,7 +72,7 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#EACA92',
-    paddingVertical: 10,
+    paddingVertical: 16,
     gap: 40,
     paddingHorizontal: 40,
   },

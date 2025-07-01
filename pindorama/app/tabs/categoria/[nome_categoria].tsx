@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styles } from '@/styles/styles';
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
+import Carrossel from '@/components/carrossel';
 
 export default function CategoriaPage() {
   const { nome_categoria } = useLocalSearchParams();
@@ -25,7 +26,7 @@ export default function CategoriaPage() {
     }, [nome_categoria]);
 
   return (
-    <View style={styles.conteudo}>
+    <View style={[styles.conteudo]}>
             {/* Absolutes, design */}
             <View style={[styles.div, {alignItems: 'flex-start', gap: 10}]}>
                 <Pressable
@@ -39,10 +40,12 @@ export default function CategoriaPage() {
             </View>
     
             {/* Conteúdo mesmo da página */}
-            <ImageBackground style={[styles.div, {height: 370, width: 334}]}
-                    source={require('@/assets/images/mapa.png')}
+            <ImageBackground style={[styles.div, {flex: 1, width: '100%',}]}
+                    source={require('@/assets/images/fundo_categoria.png')}
                     resizeMode="contain">
-    
+
+                    {categoria && (<Carrossel id_categoria={categoria.id} />)}
+
             </ImageBackground>
         </View>
   );

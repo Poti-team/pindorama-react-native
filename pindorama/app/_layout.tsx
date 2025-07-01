@@ -8,14 +8,15 @@ import { useFonts } from 'expo-font';
 
 export default function Mosaico_top() {
     useEffect(() => {
-      (async () => {
+      const hideNavigationBar = async () => {
         try {
           await NavigationBar.setVisibilityAsync("hidden");
         } catch (error) {
           console.warn("Failed to hide navigation bar:", error);
-        }
-      })();
-    }, [])
+        } 
+      };
+      hideNavigationBar();
+    }, []); // Executa apenas uma vez ao montar o componente
 
     const [fontsLoaded] = useFonts({
         'IrishGrover-Regular': require('@/assets/fonts/Irish_Grover/IrishGrover-Regular.ttf')
