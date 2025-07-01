@@ -49,9 +49,11 @@ export default function Auth() {
     fetchData();
   }, [userSession]);
 
-  const home = () => {
-    router.replace('/home');
-  };
+  useEffect(() => {
+    if (ready) {
+      router.replace('/home');
+    }
+  }, [ready]);
 
 
   const emailJaExiste = async (email: string): Promise<boolean> => {
@@ -181,6 +183,9 @@ export default function Auth() {
   const carregarDadosUsuario = async () => {
     try {
       setLoadingData(true);
+      await AsyncStorage.setItem('UsuarioFase', JSON.stringify([]));
+      await AsyncStorage.setItem('UsuarioItem', JSON.stringify([]));
+      await AsyncStorage.setItem('UsuarioConquista', JSON.stringify([]));
       const {
         data: { user },
       } = await supabase.auth.getUser();
@@ -270,7 +275,7 @@ export default function Auth() {
 
   if (!userSession && !login) {
     return (
-      <View style={styles.container}>
+      <View style={styles.conteudo}>
         <Text style={styles.title}>Criação de Conta</Text>
         <TextInput
           style={styles.input}
@@ -305,29 +310,17 @@ export default function Auth() {
           onPress={() => setLogin(true)}>
           <Text style={styles.buttonText}>Já tem uma conta? Faça login!</Text>
         </Pressable>
-        <Pressable
-          style={[styles.button]}
-          onPress={async () => {
-            setLoadingData(true);
-            await carregarDados();
-            await carregarDadosUsuario();
-            setLoadingData(false);
-            router.replace('/home');
-          }}>
-          <Text style={styles.buttonText}>Continuar como convidado</Text>
-        </Pressable>
       </View>
     );
   }
 
   if (loadingData) {
     return (
-      <View style={styles.container}>
+      <View style={styles.conteudo}>
         <ActivityIndicator size="large" color="#3b82f6" />
         <Text style={styles.text}>Carregando conteúdo do jogo...</Text>
       </View>
     );
   }
-  if (ready) { home() }
   return null; // Redireciona para a home, não renderiza nada aqui
 }
