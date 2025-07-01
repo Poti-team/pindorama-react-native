@@ -258,6 +258,7 @@ export default function Auth() {
             await carregarDados();
             await carregarDadosUsuario();
             await AsyncStorage.setItem('Usuario', JSON.stringify({ id: 1, username: 'convidado'}));
+            await AsyncStorage.setItem('UsuarioFase', JSON.stringify([{ id_fase: 1, id_usuario: 1}, { id_fase: 2, id_usuario: 1}]));
             setUserSession(null);
             setLoading(false);
             router.replace('/home');

@@ -34,7 +34,7 @@ export default function LayoutComMenu() {
       {/* Menu inferior */}
       <View style={styles.menu}>
 
-        <View style={[styles.absolute,{top: -13}]}>
+        <View style={[styles.absolute,{top: -5}]}>
           <Image source={require('@/assets/images/detalhe_menu.png')}/>
         </View>
 
