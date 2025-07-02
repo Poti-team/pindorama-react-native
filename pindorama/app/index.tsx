@@ -9,7 +9,6 @@ import { supabase } from '@/services/supabase';
 import { styles } from '@/styles/styles';
 
 export default function Auth() {
-  const [userSession, setUserSession] = useState<Session | null>(null);
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [username, setUsername] = useState('');
@@ -17,28 +16,29 @@ export default function Auth() {
   const [loading, setLoading] = useState(false);
   const [login, setLogin] = useState(true);
   const [ready, setReady] = useState(false);
-
   const router = useRouter();
-
+  
+  const [userSession, setUserSession] = useState<Session | null>(null);
+  
   useEffect(() => {
-    checkUsuarioExistente();
-  }, [userSession, ready]);
-
-  useEffect(() => {
-
+    
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUserSession(session);
     });
-
+    
     const { data: listener } = supabase.auth.onAuthStateChange(async (_event, session) => {
-        setUserSession(session);
+      setUserSession(session);
     });
-
+    
     return () => {
       listener?.subscription.unsubscribe();
     };
   }, []);
 
+  useEffect(() => {
+    checkUsuarioExistente();
+  }, [userSession, ready]);
+  
   useEffect(() => {
     const fetchData = async () => {
       if (userSession) {
@@ -119,12 +119,6 @@ export default function Auth() {
     if (signUpError) {
       Alert.alert('Erro no cadastro', 'Algo deu errado ao criar sua conta. Por favor, tente novamente.');
       return;
-    } else {
-        Alert.alert('Sucesso', 'Conta criada com sucesso! Verifique seu email para confirmação.');
-        setLogin(true);
-        setEmail('');
-        setSenha('');
-        setUsername('');
     }
   }};
 
@@ -183,14 +177,15 @@ export default function Auth() {
   const carregarDadosUsuario = async () => {
     try {
       setLoadingData(true);
-      await AsyncStorage.setItem('UsuarioFase', JSON.stringify([]));
-      await AsyncStorage.setItem('UsuarioItem', JSON.stringify([]));
-      await AsyncStorage.setItem('UsuarioConquista', JSON.stringify([]));
+
       const {
         data: { user },
       } = await supabase.auth.getUser();
 
       if (user) {
+        console.log('Usuário logado:', user.id);
+        console.log('Carregando dados do usuário...');
+
         const id_usuario = user.id;
 
         const [UsuarioFase, UsuarioItem, UsuarioConquista] = await Promise.all([
@@ -202,7 +197,19 @@ export default function Auth() {
         await AsyncStorage.setItem('UsuarioFase', JSON.stringify(UsuarioFase.data));
         await AsyncStorage.setItem('UsuarioItem', JSON.stringify(UsuarioItem.data));
         await AsyncStorage.setItem('UsuarioConquista', JSON.stringify(UsuarioConquista.data));
-        
+
+        console.log('Dados do usuário carregados e armazenados no cache local.');
+      } else {
+        const usuarioFaseStr = await AsyncStorage.getItem('UsuarioFase');
+        const usuarioFaseArr = usuarioFaseStr ? JSON.parse(usuarioFaseStr) : [];
+        if (!usuarioFaseArr.find((uf: any) => uf.id_usuario === 1)) {
+          // Se não houver usuário logado e nenhum cache de usuário convidado, inicializa os dados vazios
+          console.log('Nenhum cache de usuario encontrado, iniciando carregamento...');
+          await AsyncStorage.setItem('UsuarioFase', JSON.stringify([]));
+          await AsyncStorage.setItem('UsuarioItem', JSON.stringify([]));
+          await AsyncStorage.setItem('UsuarioConquista', JSON.stringify([]));
+          console.log('Dados de usuário inicializados no cache local.');
+        }
       }
     } catch (error) {
       Alert.alert('Erro ao carregar dados', (error as Error).message);
@@ -216,15 +223,14 @@ export default function Auth() {
         if (!usuarioExistente) {
             await supabase.from('Usuario').insert({
               id: userSession.user.id,
-              username: userSession.user.user_metadata.username || 'convidado',
-              email: userSession.user.email || '',
+              username: userSession.user.user_metadata.username
             }).then(({ error }) => {
               if (error) {
                 Alert.alert('Erro ao criar usuário', error.message);
               }
             });
-            await AsyncStorage.setItem('Usuario', JSON.stringify({ id: userSession.user.id, username: userSession.user.user_metadata.username || 'convidado' }));
-        }
+          }
+        await AsyncStorage.setItem('Usuario', JSON.stringify({ id: userSession.user.id, username: userSession.user.user_metadata.username || 'convidado' }));
         setReady(true);
       }
     };

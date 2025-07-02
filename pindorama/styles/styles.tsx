@@ -50,6 +50,8 @@ export const styles = StyleSheet.create({
     borderColor: '#AC7641',
     borderWidth: 3,
     borderRadius: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   buttonText: {
     color: '#642c08',
@@ -75,6 +77,8 @@ export const styles = StyleSheet.create({
     paddingVertical: 16,
     gap: 40,
     paddingHorizontal: 40,
+    zIndex: 1000,
+    position: 'fixed',
   },
   absolute: {
     position: 'absolute',
@@ -102,7 +106,7 @@ export const styles = StyleSheet.create({
     left: 0,
     justifyContent: 'center',
     alignItems: 'center',
-    zIndex: 1000,
+    zIndex: 10000,
   },
   popUpDisplay: {
     width: screenWidth - 80,
@@ -111,5 +115,15 @@ export const styles = StyleSheet.create({
     borderWidth: 4,
     borderColor: '#642C08',
     borderRadius: 20,
+  },
+  abz: {
+    fontFamily: 'ABeeZee-Regular'
+  },
+  header: {
+    width: '100%',
+    height: 80,
+    justifyContent: 'flex-end',
+    alignItems: 'flex-start',
+    gap: 10,
   }
 });

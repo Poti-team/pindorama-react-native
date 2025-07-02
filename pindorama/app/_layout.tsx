@@ -29,7 +29,7 @@ export default function Mosaico_top() {
     return (
         <View style={styles.container}>
             <StatusBar hidden /> 
-            <View style={{zIndex: 10}}>
+            <View style={{zIndex: 10, position: 'fixed'}}>
                 <Image
                     source={require('@/assets/images/mosaico_top.png')}
                     resizeMode="contain"
@@ -37,6 +37,12 @@ export default function Mosaico_top() {
             </View>
             <View style={[styles.absolute, {bottom: 0, left: 0}]}>
                 <Image source={require('@/assets/images/sol.png')}/>
+            </View>
+            <View style={[styles.absolute, { top: 50, right: -25 }]}>
+              <Image
+                source={require('@/assets/images/sol.png')}
+                style={{ transform: [{ rotate: '180deg' }] }}
+              />
             </View>
             <Slot />
         </View>

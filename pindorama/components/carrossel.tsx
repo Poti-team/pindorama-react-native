@@ -1,12 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Text, Image, Pressable, Animated } from 'react-native';
+import { View, Text, Image, Pressable, Animated, ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styles } from '@/styles/styles';
+
+const { router } = require('expo-router');
 
 export default function Carrossel({ id_categoria }: { id_categoria: number }) {
   const [fases, setFases] = useState<any[]>([]);
   const [fasesDict, setFasesDict] = useState<{ [key: number]: { id: number; nome: string; status: string } }>({});
   const [index, setIndex] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   // Carrega as fases ao abrir ou mudar categoria
   useEffect(() => {
@@ -18,13 +21,13 @@ export default function Carrossel({ id_categoria }: { id_categoria: number }) {
         fases = fasesData.filter((fase: any) => fase.id_categoria === id_categoria);
       }
       setFases(fases);
-      setIndex(0); // Sempre começa na primeira fase
     };
     fetchFases();
   }, [id_categoria]);
 
   // Monta o dict e checa concluídas/libera próxima
   useEffect(() => {
+    setLoading(true);
     const montarDict = async () => {
       const data = await AsyncStorage.getItem('UsuarioFase');
       let fasesConcluidas: any[] = [];
@@ -50,13 +53,15 @@ export default function Carrossel({ id_categoria }: { id_categoria: number }) {
         // Libera a primeira trancada
         const disponivel = Object.values(dict).find((fase: any) => fase.status === 'disponivel');
         if (!disponivel) {
-          const primeiraTrancada = fases.find((fase: any) => dict[fase.id].status === 'trancada');
+          const primeiraTrancada = fases.find((fase: any, idx: number) => dict[fase.id].status === 'trancada');
           if (primeiraTrancada) {
             dict[primeiraTrancada.id].status = 'disponivel';
+            const idx = fases.findIndex(f => f.id === primeiraTrancada.id);
+            setIndex(idx);
           }
         }
         setFasesDict(dict);
-        console.log('Fases dict montado:', dict);
+        setLoading(false);
       }
     };
     montarDict();
@@ -92,9 +97,13 @@ const animatedIndex = useRef(new Animated.Value(0)).current;
     Animated.spring(animatedIndex, {
       toValue: index,
       useNativeDriver: true,
-      friction: 24,
+      friction: 10,
     }).start();
   }, [index]);
+
+  if (loading) {
+      return null
+    }
 
   return (
     <View style={[styles.div, { height: '100%', alignItems: 'center', justifyContent: 'center', gap: 20, paddingBottom: 20}]}>
@@ -112,7 +121,7 @@ const animatedIndex = useRef(new Animated.Value(0)).current;
   // Ajuste para translateY: foco sempre em 0 (base), próximas sobem, anteriores descem
   const animatedTranslateY = pos.interpolate({
     inputRange: [-4, -3, -2, -1, 0, 1, 2, 3, 4],
-    outputRange: [1200, 900, 600, 300, 0, -120, -300, -600, -960],
+    outputRange: [1200, 900, 600, 300, -10, -130, -300, -600, -960],
     extrapolate: 'clamp',
   });
 
@@ -150,14 +159,18 @@ const animatedIndex = useRef(new Animated.Value(0)).current;
         <Image source={require('@/assets/images/horizonte.png')} style={[styles.absolute, {zIndex: 100000, top: 0, width: '20%', height: undefined, aspectRatio: 1}]}/>
       </View>
       <View style={[styles.div]}>
-            <Text style={[styles.text, {fontSize: 32}]}>{fases[index]?.nome || 'Carregando...'}</Text>
+            <Text style={[styles.text, {fontSize: 24}]}>{fases[index]?.nome || 'Carregando...'}</Text>
             <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', width: '100%', marginTop: 10, gap: 16 }}>
-                <Pressable onPress={handlePrev} disabled={index === 0}>
+                <Pressable style={{ padding: 8 }} onPress={handlePrev} disabled={index === 0}>
                     <Image source={require('@/assets/images/seta_carrossel.png')} style={{ transform: [{ rotate: '180deg' }], opacity: index === 0 ? 0.3 : 1 }} />
                 </Pressable>
                 <Pressable
                   style={[styles.button, { opacity: !fases[index] || fasesDict[fases[index].id]?.status === 'trancada' ? 0.6 : 1 }]}
-                  onPress={() => setIndex(0)}
+                  onPress={() => {
+                    if (fases[index] && fasesDict[fases[index].id]?.status !== 'trancada') {
+                      router.push(`/tabs/categoria/fase/${fases[index].id}`);
+                    }
+                  }}
                   disabled={
                     !fases[index] ||
                     fasesDict[fases[index].id]?.status === 'trancada'
@@ -165,8 +178,8 @@ const animatedIndex = useRef(new Animated.Value(0)).current;
                 >
                     <Text style={[styles.text, {fontSize: 20}]}>{'Jogar'}</Text>
                 </Pressable>
-                <Pressable onPress={handleNext} disabled={index === fases.length - 1}>
-                    <Image source={require('@/assets/images/seta_carrossel.png')} style={{ opacity: index === fases.length - 1 ? 0.3 : 1, padding: 4}} />
+                <Pressable style={{ padding: 8 }} onPress={handleNext} disabled={index === fases.length - 1}>
+                    <Image source={require('@/assets/images/seta_carrossel.png')} style={{ opacity: index === fases.length - 1 ? 0.3 : 1 }} />
                 </Pressable>
             </View>
       </View>

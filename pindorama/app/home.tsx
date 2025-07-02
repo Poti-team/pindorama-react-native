@@ -46,7 +46,7 @@ export default function Home() {
             </Pressable>
             <Pressable
                 style={[styles.placa,]}
-                onPress={() => irPara('/creditos')}>
+                onPress={() => irPara('/tabs/creditos')}>
                 <Image source={require('@/assets/images/placa_creditos.png')}
                 style={{height: 80, resizeMode: 'contain' }}
                 ></Image>
