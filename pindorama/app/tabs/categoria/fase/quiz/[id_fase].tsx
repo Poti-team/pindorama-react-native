@@ -4,6 +4,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styles } from '@/styles/styles';
 import { supabase } from '@/services/supabase';
+import { checkConquista } from '@/components/checkconquista';
 
 export default function QuizFasePage() {
   const { id_fase: id_fase_param } = useLocalSearchParams();
@@ -95,7 +96,25 @@ export default function QuizFasePage() {
                   { paddingVertical: 8, paddingHorizontal: 12, gap: 8, width: '100%', justifyContent: 'space-between', opacity: alternativaSelecionada !== null && alternativaSelecionada !== index + 1 ? 0.6 : 1 }
                 ]}
                 disabled={alternativaSelecionada !== null}
-                onPress={() => setAlternativaSelecionada(index + 1)}
+                onPress={async () => {
+                  setAlternativaSelecionada(index + 1);
+                  if (index + 1 === perguntasDict[ordem]?.correta) {
+                    console.log('Resposta correta!');
+                    const usuario = await AsyncStorage.getItem('Usuario');
+                    if (usuario) {
+                      const usuarioData = JSON.parse(usuario);
+                      usuarioData.respostas_certas = (usuarioData.respostas_certas || 0) + 1;
+                      await AsyncStorage.setItem('Usuario', JSON.stringify(usuarioData));
+                      if (usuarioData.id !== 1) {
+                        await supabase
+                        .from('Usuario')
+                        .update({ respostas_certas: usuarioData.respostas_certas })
+                        .eq('id', usuarioData.id);
+                      }
+                    }
+                    checkConquista('acerto');
+                  }
+                }}
               >
                 <Text style={[styles.text, styles.abz, {fontSize: 13, fontWeight: 'bold', flex: 9, textAlign: 'left'}]}>{alt}</Text>
                 {icone ? (
@@ -137,10 +156,12 @@ export default function QuizFasePage() {
                     id_usuario: usuarioData ? usuarioData.id : null
                     });
                     await AsyncStorage.setItem('UsuarioFase', JSON.stringify(usuarioFaseArray));
+                    checkConquista('fase');
+                    checkConquista('categoria');
+                    console.log('Fase concluída e registrada no cache local.');
+                    console.log('Iniciando registro no banco de dados...');
                 }
-                console.log('Fase concluída e registrada no cache local.');
-                console.log('Iniciando registro no banco de dados...');
-                if (usuarioData.id !== 1) {
+                if (usuarioData.id != 1) {
                   // Se for o usuário de teste, não insere no banco
                     try {
                         const { data: usuarioFaseDb, error: selectError } = await supabase
@@ -160,6 +181,7 @@ export default function QuizFasePage() {
                                 console.error('Erro ao registrar fase no banco de dados:', insertError.message);
                             } else {
                                 console.log('Fase concluída e registrada no banco de dados.');
+
                             }
                         } else {
                             console.log('Usuário já possui fase registrada:', usuarioFaseDb);

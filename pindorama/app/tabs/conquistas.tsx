@@ -105,14 +105,6 @@ export default function ConquistasPage() {
     };
   };
 
-  if (loading) {
-    return (
-      <View style={styles.conteudo}>
-        <Text style={styles.text}>Carregando conquistas...</Text>
-      </View>
-    );
-  }
-
   return (
     <View style={styles.conteudo}>
       <View style={[styles.header]}>
@@ -158,14 +150,6 @@ export default function ConquistasPage() {
             </ImageBackground>
           );
         })}
-        
-        {conquistas.length === 0 && (
-          <View style={[styles.div, { alignItems: 'center', marginTop: 50 }]}>
-            <Text style={[styles.text, { fontSize: 18, textAlign: 'center' }]}>
-              Nenhuma conquista encontrada
-            </Text>
-          </View>
-        )}
       </ScrollView>
     </View>
   );

@@ -208,8 +208,10 @@ export default function Auth() {
           await AsyncStorage.setItem('UsuarioFase', JSON.stringify([]));
           await AsyncStorage.setItem('UsuarioItem', JSON.stringify([]));
           await AsyncStorage.setItem('UsuarioConquista', JSON.stringify([]));
+          await AsyncStorage.setItem('Usuario', JSON.stringify({ id: 1, username: 'convidado', respostas_certas: 0 }));
           console.log('Dados de usuário inicializados no cache local.');
         }
+        console.log('Usuário convidado encontrado ou criado.');
       }
     } catch (error) {
       Alert.alert('Erro ao carregar dados', (error as Error).message);
@@ -230,8 +232,12 @@ export default function Auth() {
               }
             });
           }
-        await AsyncStorage.setItem('Usuario', JSON.stringify({ id: userSession.user.id, username: userSession.user.user_metadata.username || 'convidado' }));
-        setReady(true);
+        await supabase.from('Usuario').select('*').eq('id', userSession.user.id).single().then(async ({ data }) => {
+          if (data) {
+            await AsyncStorage.setItem('Usuario', JSON.stringify({ id: data.id, username: data.username || 'convidado', respostas_certas: data.respostas_certas || 0 }));
+            setReady(true);
+          }
+        });
       }
     };
 
@@ -268,7 +274,6 @@ export default function Auth() {
             setLoading(true)
             await carregarDados();
             await carregarDadosUsuario();
-            await AsyncStorage.setItem('Usuario', JSON.stringify({ id: 1, username: 'convidado'}));
             setUserSession(null);
             setLoading(false);
             router.replace('/home');
