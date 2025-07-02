@@ -46,7 +46,10 @@ export default function FasePage() {
       const data = await AsyncStorage.getItem('Pagina');
       if (data) {
         const paginas = JSON.parse(data);
-        setPaginas(paginas);
+        const paginasFase = paginas
+          .filter((p: any) => String(p.id_fase) === String(id_fase))
+          .sort((a: any, b: any) => a.ordem - b.ordem);
+        setPaginas(paginasFase);
       }
       setLoading(false);
     };
@@ -82,7 +85,7 @@ export default function FasePage() {
             <Text style={[styles.title, {width: '100%', fontSize: 32}]}>{fase.nome}</Text>
         </View>
         <View style={[styles.div, {flex:1, justifyContent: 'flex-start', gap: 20}]}>
-            <Text style={[styles.text, styles.abz, {fontSize: 16}]}>
+            <Text style={[styles.text, styles.abz, {fontSize: 15}]}>
                 {paginasDict[ordem]?.texto}
             </Text>
             {paginasDict[ordem]?.imagem ? (
