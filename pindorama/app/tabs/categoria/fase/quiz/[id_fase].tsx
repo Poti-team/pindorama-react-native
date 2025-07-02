@@ -15,6 +15,19 @@ export default function QuizFasePage() {
   const [loading, setLoading] = useState(true);
   const [alternativaSelecionada, setAlternativaSelecionada] = useState<number | null>(null);
   const router = useRouter();
+  const [fase, setFase] = useState<any | null>(null);
+
+  useEffect(() => {
+    const fetchFase = async () => {
+      const data = await AsyncStorage.getItem('Fase');
+      if (data) {
+        const todasFases = JSON.parse(data);
+        const faseAtual = todasFases.find((f: any) => f.id === id_fase);
+        setFase(faseAtual);
+      }
+    };
+    fetchFase();
+  }, [id_fase]);
 
   useEffect(() => {
     const fetchPerguntas = async () => {
@@ -156,11 +169,13 @@ export default function QuizFasePage() {
                     id_usuario: usuarioData ? usuarioData.id : null
                     });
                     await AsyncStorage.setItem('UsuarioFase', JSON.stringify(usuarioFaseArray));
-                    checkConquista('fase');
-                    checkConquista('categoria');
+                    console.log(usuarioFaseArray);
+                }
+                    await checkConquista('fase');
+                    await checkConquista('categoria', fase.id_categoria);
                     console.log('Fase concluída e registrada no cache local.');
                     console.log('Iniciando registro no banco de dados...');
-                }
+                
                 if (usuarioData.id != 1) {
                   // Se for o usuário de teste, não insere no banco
                     try {
