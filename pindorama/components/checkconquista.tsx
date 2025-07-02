@@ -15,7 +15,7 @@ interface UsuarioConquista {
   id_usuario: number;
 }
 
-export const checkConquista = async (tipo: 'categoria' | 'fase' | 'item' | 'acerto') => {
+export const checkConquista = async (tipo: 'categoria' | 'fase' | 'item' | 'acerto', id_categoria?: number) => {
   try {
     // Carrega dados necessários
     const conquistasData = await AsyncStorage.getItem('Conquista');
@@ -24,6 +24,9 @@ export const checkConquista = async (tipo: 'categoria' | 'fase' | 'item' | 'acer
     if (!conquistasData) {
       return [];
     }
+
+    const usuario = await AsyncStorage.getItem('Usuario');
+    const usuarioData = usuario ? JSON.parse(usuario) : null;
 
     const todasConquistas: Conquista[] = JSON.parse(conquistasData);
     const usuarioConquistas: UsuarioConquista[] = usuarioConquistasData 
@@ -39,38 +42,60 @@ export const checkConquista = async (tipo: 'categoria' | 'fase' | 'item' | 'acer
     // Conquistas novas concluídas
     const novasConquistas: Conquista[] = [];
 
-    for (const conquista of conquistasDoTipo) {
-      // Se já foi obtida, pula
-      if (conquistasObtidas.includes(conquista.id)) {
-        continue;
-      }
+    if (id_categoria && tipo === 'categoria') {
+      // Se for por categoria, filtra conquistas dessa categoria
+      const conquista = conquistasDoTipo.filter(c => c.id_categoria === id_categoria);
 
-      // Verifica se a conquista foi concluída baseado no tipo
-      const concluida = await verificarConquistaConcluida(conquista);
-      
-      if (concluida) {
-        novasConquistas.push(conquista);
-        
-        const usuario = await AsyncStorage.getItem('Usuario');
-        const usuarioData = usuario ? JSON.parse(usuario) : null;
-        
-        // Adiciona ao AsyncStorage
-        const novaUsuarioConquista: UsuarioConquista = {
-          id_conquista: conquista.id,
-          id_usuario: usuarioData ? usuarioData.id : null
-        };
-        usuarioConquistas.push(novaUsuarioConquista);
-        
-        if (usuarioData.id != 1) {
-          // Se não for o usuário de teste, insere no banco de dados
-          const { error } = await supabase.from('UsuarioConquista').insert([novaUsuarioConquista]);
-          if (error) {
-            console.error('Erro ao enviar conquista para Supabase:', error.message);
+      if (conquista.length > 0) {
+        const concluida = await verificarConquistaConcluida(conquista[0]);
+
+        if (concluida && !conquistasObtidas.includes(conquista[0].id)) {
+          novasConquistas.push(conquista[0]);
+          const novaUsuarioConquista: UsuarioConquista = {
+            id_conquista: conquista[0].id,
+            id_usuario: usuarioData ? usuarioData.id : null
+          };
+          usuarioConquistas.push(novaUsuarioConquista);
+
+          if (usuarioData.id != 1) {
+            // Se não for o usuário de teste, insere no banco de dados
+            const { error } = await supabase.from('UsuarioConquista').insert([novaUsuarioConquista]);
+            if (error) {
+              console.error('Erro ao enviar conquista para Supabase:', error.message);
+            }
           }
         }
-        break; // Para de verificar após a primeira conquista nova
-      } else {
-        break
+      }
+    } else if (tipo !== 'categoria') {
+      for (const conquista of conquistasDoTipo) {
+        // Se já foi obtida, pula
+        if (conquistasObtidas.includes(conquista.id)) {
+          continue;
+        }
+        // Verifica se a conquista foi concluída baseado no tipo
+        const concluida = await verificarConquistaConcluida(conquista);
+
+        if (concluida) {
+          novasConquistas.push(conquista);
+
+          // Adiciona ao AsyncStorage
+          const novaUsuarioConquista: UsuarioConquista = {
+            id_conquista: conquista.id,
+            id_usuario: usuarioData ? usuarioData.id : null
+          };
+          usuarioConquistas.push(novaUsuarioConquista);
+
+          if (usuarioData.id != 1) {
+            // Se não for o usuário de teste, insere no banco de dados
+            const { error } = await supabase.from('UsuarioConquista').insert([novaUsuarioConquista]);
+            if (error) {
+              console.error('Erro ao enviar conquista para Supabase:', error.message);
+            }
+          }
+          break; // Para de verificar após a primeira conquista nova
+        } else {
+          break;
+        }
       }
     }
 
@@ -111,27 +136,29 @@ const verificarConquistaConcluida = async (conquista: Conquista): Promise<boolea
 };
 
 const verificarConquistaCategoria = async (conquista: Conquista): Promise<boolean> => {
-  // Verifica se completou todas as fases de uma categoria
-  if (!conquista.id_categoria) {
-    return false;
-  }
-  
-  const fasesData = await AsyncStorage.getItem('Fase');
-  const usuarioFasesData = await AsyncStorage.getItem('UsuarioFase');
-  
-  if (!fasesData || !usuarioFasesData) {
-    return false;
-  }
-  
-  const fases = JSON.parse(fasesData);
-  const usuarioFases = JSON.parse(usuarioFasesData);
-  
-  const fasesCategoria = fases.filter((f: any) => f.id_categoria === conquista.id_categoria);
-  const fasesConcluidas = usuarioFases.filter((uf: any) => uf.id_categoria === conquista.id_categoria);
-  
-  const completa = fasesConcluidas.length === fasesCategoria.length;
-  
-  return completa;
+    // Verifica se completou todas as fases de uma categoria
+    if (!conquista.id_categoria) {
+        return false;
+    }
+
+    const fasesData = await AsyncStorage.getItem('Fase');
+    const usuarioFasesData = await AsyncStorage.getItem('UsuarioFase');
+
+    if (!fasesData || !usuarioFasesData) {
+        return false;
+    }
+
+    const fases = JSON.parse(fasesData);
+    const usuarioFases = JSON.parse(usuarioFasesData);
+
+    const fasesCategoria = fases.filter((f: any) => f.id_categoria === conquista.id_categoria);
+    const fasesConcluidas = usuarioFases.filter((uf: any) =>
+        fasesCategoria.some((f: any) => f.id === uf.id_fase)
+    );
+
+    const completa = fasesConcluidas.length === fasesCategoria.length;
+
+    return completa;
 };
 
 const verificarConquistaFase = async (conquista: Conquista): Promise<boolean> => {
