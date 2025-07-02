@@ -20,8 +20,7 @@ export default function Mapa() {
 
     return (
     <View style={styles.conteudo}>
-        {/* Absolutes, design */}
-        <View style={[styles.div, {alignItems: 'flex-start', gap: 10}]}>
+        <View style={[styles.header]}>
             <Pressable
                 style={[styles.row, {width: 'auto'}]} 
                 onPress={() => irPara('/home')}>
