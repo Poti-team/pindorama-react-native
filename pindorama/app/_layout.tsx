@@ -5,6 +5,9 @@ import * as NavigationBar from 'expo-navigation-bar';
 import { useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
+import { Dimensions } from 'react-native';
+
+const screenHeight = Dimensions.get('window').height;
 
 export default function Mosaico_top() {
     useEffect(() => {
@@ -27,13 +30,18 @@ export default function Mosaico_top() {
     }
     
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { height: screenHeight }]}>
             <StatusBar hidden /> 
-            <View style={{zIndex: 10, position: 'fixed'}}>
-                <Image
-                    source={require('@/assets/images/mosaico_top.png')}
-                    resizeMode="contain"
-                />
+            <View style={{ zIndex: 10, width: '100%', height: 50 }}>
+              <Image
+                source={require('@/assets/images/mosaico_top.png')}
+                resizeMode="repeat"
+                style={{ 
+                  width: '100%', 
+                  height: '100%',
+                  resizeMode: 'contain',
+                }}
+              />
             </View>
             <View style={[styles.absolute, {bottom: 0, left: 0}]}>
                 <Image source={require('@/assets/images/sol.png')}/>

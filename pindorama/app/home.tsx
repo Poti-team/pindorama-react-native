@@ -12,45 +12,72 @@ export default function Home() {
     };
 
     return (
-    <View style={styles.conteudo}>
-        <View style={{ flex: 2, justifyContent: 'center', alignItems: 'center', width: '100%', paddingTop: 40 }}>
+    <View style={[styles.conteudo, { justifyContent: 'flex-end' }]}>
+        <View style={{ width: '100%', flex: 1, justifyContent: 'flex-end', alignItems: 'flex-end' }}>
             <Image
                 source={require('@/assets/images/pindorama.png')}
-                style={{ width: '100%', resizeMode: 'contain' }}
+                style={{ aspectRatio: 2, maxWidth: '100%' }}
+                resizeMode="contain"
             />
         </View>
         <ImageBackground 
             source={require('@/assets/images/placa_suporte.png')}
-            style={[styles.placa_home]}
+            style={[styles.placa_home, { aspectRatio: 0.68, flex: 2, }]}
             imageStyle={{ resizeMode: 'contain' }}>
-            <Pressable
-                style={[styles.placa]}
-                onPress={() => irPara('/tabs/mapa')}>
-                <Image source={require('@/assets/images/placa_jogar.png')}
-                style={{height: 80, resizeMode: 'contain' }}
-                ></Image>
-            </Pressable>
-            <Pressable
-                style={[styles.placa,]}
-                onPress={() => irPara('/tabs/perfil')}>
-                <Image source={require('@/assets/images/placa_meu_avatar.png')}
-                style={{height: 80, resizeMode: 'contain' }}
-                ></Image>
-            </Pressable>
-            <Pressable
-                style={[styles.placa,]}
-                onPress={() => irPara('/tabs/conquistas')}>
-                <Image source={require('@/assets/images/placa_conquistas.png')}
-                style={{height: 80, resizeMode: 'contain' }}
-                ></Image>
-            </Pressable>
-            <Pressable
-                style={[styles.placa,]}
-                onPress={() => irPara('/tabs/creditos')}>
-                <Image source={require('@/assets/images/placa_creditos.png')}
-                style={{height: 80, resizeMode: 'contain' }}
-                ></Image>
-            </Pressable>
+            <View style={{ flex: 1, width: '100%', justifyContent: 'flex-start', alignItems: 'center', gap: 20, paddingTop: 12 }}>
+                <Pressable
+                    style={[
+                        styles.placa,
+                        { alignItems: 'center', justifyContent: 'center', width: '80%' }
+                    ]}
+                    onPress={() => irPara('/tabs/mapa')}>
+                    <ImageBackground
+                        source={require('@/assets/images/placa_jogar.png')}
+                        style={{ width: '100%', aspectRatio: 4, justifyContent: 'center', alignItems: 'center' }}
+                        imageStyle={{ resizeMode: 'contain' }}>
+                        <Text style={[styles.text, {fontSize: 24, transform: [{ rotate: '-2deg' }]}]}>Jogar</Text>
+                    </ImageBackground>
+                </Pressable>
+                <Pressable
+                    style={[
+                        styles.placa,
+                        { alignItems: 'center', justifyContent: 'center', width: '80%' }
+                    ]}
+                    onPress={() => irPara('/tabs/perfil')}>
+                    <ImageBackground
+                        source={require('@/assets/images/placa_meu_avatar.png')}
+                        style={{ width: '100%', aspectRatio: 4, justifyContent: 'center', alignItems: 'center' }}
+                        imageStyle={{ resizeMode: 'contain' }}>
+                        <Text style={[styles.text, {fontSize: 24, color: '#fff', transform: [{ rotate: '2deg' }]}]}>Meu Avatar</Text>
+                    </ImageBackground>
+                </Pressable>
+                <Pressable
+                    style={[
+                        styles.placa,
+                        { alignItems: 'center', justifyContent: 'center', width: '80%' }
+                    ]}
+                    onPress={() => irPara('/tabs/conquistas')}>
+                    <ImageBackground
+                        source={require('@/assets/images/placa_conquistas.png')}
+                        style={{ width: '100%', aspectRatio: 4, justifyContent: 'center', alignItems: 'center' }}
+                        imageStyle={{ resizeMode: 'contain' }}>
+                        <Text style={[styles.text, {fontSize: 24, color: '#fff'}]}>Conquistas</Text>
+                    </ImageBackground>
+                </Pressable>
+                <Pressable
+                    style={[
+                        styles.placa,
+                        { alignItems: 'center', justifyContent: 'center', width: '80%' }
+                    ]}
+                    onPress={() => irPara('/tabs/creditos')}>
+                    <ImageBackground
+                        source={require('@/assets/images/placa_creditos.png')}
+                        style={{ width: '100%', aspectRatio: 4, justifyContent: 'center', alignItems: 'center' }}
+                        imageStyle={{ resizeMode: 'contain' }}>
+                        <Text style={[styles.text, {fontSize: 24, color: '#fff', transform: [{ rotate: '-1deg' }]}]}>Créditos</Text>
+                    </ImageBackground>
+                </Pressable>
+            </View>
         </ImageBackground>
     </View>
     )
