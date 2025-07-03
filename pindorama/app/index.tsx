@@ -1,5 +1,5 @@
 import React, { use, useEffect, useState } from 'react';
-import { View, Text, TextInput, Pressable, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, TextInput, Pressable, ActivityIndicator, Alert, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Session } from '@supabase/supabase-js';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -12,7 +12,7 @@ export default function Auth() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [username, setUsername] = useState('');
-  const [loadingData, setLoadingData] = useState(true);
+  const [loadingData, setLoadingData] = useState(false);
   const [loading, setLoading] = useState(false);
   const [login, setLogin] = useState(true);
   const [ready, setReady] = useState(false);
@@ -21,7 +21,7 @@ export default function Auth() {
   const [userSession, setUserSession] = useState<Session | null>(null);
   
   useEffect(() => {
-    
+    setReady(false);
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUserSession(session);
     });
@@ -241,97 +241,121 @@ export default function Auth() {
       }
     };
 
-  if (!userSession && login) {
-    return (
-      <View style={styles.conteudo}>
-        <Text style={styles.title}>Login</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Digite seu e-mail"
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-          autoCapitalize="none"
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Digite sua senha"
-          value={senha}
-          onChangeText={setSenha}
-          secureTextEntry
-        />
-        <Pressable style={styles.button} onPress={signInWithEmail} disabled={loading || !email || !senha}>
-          <Text style={styles.buttonText}>{loading ? 'Enviando...' : 'Entrar'}</Text>
-        </Pressable>
-        <Pressable
-          style={[styles.button]}
-          onPress={() => setLogin(false)}>
-          <Text style={styles.buttonText}>Ainda não tem uma conta? Crie uma!</Text>
-        </Pressable>
-        <Pressable
-          style={[styles.button]}
-          onPress={async () => {
-            setLoading(true)
-            await carregarDados();
-            await carregarDadosUsuario();
-            setUserSession(null);
-            setLoading(false);
-            router.replace('/home');
-          }}>
-          <Text style={styles.buttonText}>Continuar como convidado</Text>
-        </Pressable>
-      </View>
-    );
-  }
+  const renderFormulario = () => {
+    if (loadingData) {
+      return (
+        <View style={styles.conteudo}>
+          <ActivityIndicator size="large" color="#3b82f6" />
+          <Text style={styles.text}>Carregando conteúdo do jogo...</Text>
+        </View>
+      );
+    }
 
-  if (!userSession && !login) {
-    return (
-      <View style={styles.conteudo}>
-        <Text style={styles.title}>Criação de Conta</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Digite seu username"
-          value={username}
-          onChangeText={setUsername}>
-        </TextInput>
-        <TextInput
-          style={styles.input}
-          placeholder="Digite seu e-mail"
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-          autoCapitalize="none"
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Digite sua senha (mínimo 8 caracteres)"
-          value={senha}
-          onChangeText={setSenha}
-          secureTextEntry
-        />
-        <Pressable
-          style={styles.button}
-          onPress={signUpWithEmail}
-          disabled={loading || senha.length < 8 || !username || !email || !senha}
-        >
-          <Text style={styles.buttonText}>{loading ? 'Enviando...' : 'Criar'}</Text>
-        </Pressable>
-        <Pressable
-          style={[styles.button]}
-          onPress={() => setLogin(true)}>
-          <Text style={styles.buttonText}>Já tem uma conta? Faça login!</Text>
-        </Pressable>
-      </View>
-    );
-  }
+    if (userSession) {
+      return null; // Redireciona para a home
+    }
 
-  if (loadingData) {
+    const isLogin = login;
+    const isSignup = !login;
+
     return (
-      <View style={styles.conteudo}>
-        <ActivityIndicator size="large" color="#3b82f6" />
-        <Text style={styles.text}>Carregando conteúdo do jogo...</Text>
+      <View style={[styles.conteudo, { justifyContent: 'flex-end' }]}>
+        {/* Logo no topo */}
+        <View style={{ width: '100%', flex: 1, justifyContent: 'flex-end', alignItems: 'flex-end' }}>
+          <Image
+            source={require('@/assets/images/pindorama.png')}
+            style={{ aspectRatio: 2, maxWidth: '100%' }}
+            resizeMode="contain"
+          />
+        </View>
+
+        {/* Formulário */}
+        <View style={[styles.div, { flex: 2, justifyContent: 'space-between', gap: 24, marginTop: -30, paddingBottom: 60 }]}>
+          <View style={{ width: '100%',  justifyContent: 'flex-start', alignItems: 'center', gap: 20 }}>
+            {/* Título */}
+            <Text style={styles.title}>
+              {isLogin ? 'Login' : 'Criação de Conta'}
+            </Text>
+
+            {/* Campos do formulário */}
+            {isSignup && (
+              <TextInput
+                style={styles.input}
+                placeholder="Digite seu username"
+                value={username}
+                onChangeText={setUsername}
+              />
+            )}
+            
+            <TextInput
+              style={styles.input}
+              placeholder="Digite seu e-mail"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+            />
+            
+            <TextInput
+              style={styles.input}
+              placeholder={isLogin ? "Digite sua senha" : "Digite sua senha (mínimo 8 caracteres)"}
+              value={senha}
+              onChangeText={setSenha}
+              secureTextEntry
+            />
+
+            {/* Botão principal */}
+            <Pressable
+              style={styles.buttonAuth}
+              onPress={isLogin ? signInWithEmail : signUpWithEmail}
+              disabled={loading || 
+                !email || !senha || 
+                (isSignup && (senha.length < 8 || !username))
+              }
+            >
+              <Text style={[styles.buttonText, { fontSize: 20}]}>
+                {loading ? 'Enviando...' : (isLogin ? 'Entrar' : 'Criar')}
+              </Text>
+            </Pressable>
+          </View>
+          <View style={{ width: '100%', alignItems: 'center', gap: 16 }}>
+          {/* Botão alternar modo */}
+          <Pressable 
+            style={{ width: '100%' }} 
+            onPress={() => setLogin(!login)}
+          >
+            <Text style={[styles.buttonText, { textAlign: 'center', fontSize: 16, textDecorationColor: '#642C08', textDecorationLine: 'underline' }]}>
+              {isLogin ? 'Ainda não tem uma conta? Crie uma!' : 'Já tem uma conta? Faça login!'}
+            </Text>
+          </Pressable>
+
+          {/* Botão convidado (apenas no modo login) */}
+          {isLogin && (
+            <Text style={[styles.text, { textAlign: 'center', fontSize: 16 }]}>
+              Ou
+            </Text>
+          )}
+          {isLogin && (
+            <Pressable
+              style={{ width: '100%' }}
+              onPress={async () => {
+                setLoading(true);
+                await carregarDados();
+                await carregarDadosUsuario();
+                setUserSession(null);
+                setLoading(false);
+                router.replace('/home');
+              }}
+            >
+              <Text style={[styles.buttonText, { textAlign: 'center', fontSize: 16, textDecorationColor: '#642C08', textDecorationLine: 'underline' }]}>Continuar como convidado</Text>
+            </Pressable>
+          )}
+          </View>
+        </View>
       </View>
     );
-  }
-  return null; // Redireciona para a home, não renderiza nada aqui
+  };
+
+  // No final do componente, substitua todos os returns por:
+  return renderFormulario();
 }
