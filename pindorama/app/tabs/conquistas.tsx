@@ -122,9 +122,11 @@ export default function ConquistasPage() {
         showsVerticalScrollIndicator={false}
       >
         {conquistas.map((conquista) => {
-          const concluida = conquistasConcluidas.includes(conquista.id);
+          let concluida = conquistasConcluidas.includes(conquista.id);
           const assets = getConquistaAssets(conquista, concluida);
-
+          if (conquista.tipo === 'item') {
+            return null; // Itens não são exibidos na lista principal
+          }
           return (
             <ImageBackground
               key={conquista.id}

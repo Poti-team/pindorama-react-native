@@ -59,10 +59,10 @@ export default function LayoutComMenu() {
           onPress={() => irPara('/tabs/conquistas')}
         />
         <BotaoMenu
-          icone={require('@/assets/images/icons/perfil.png')}
-          texto="Perfil"
-          ativo={pathname.startsWith('/tabs/perfil')}
-          onPress={() => irPara('/tabs/perfil')}
+          icone={require('@/assets/images/icons/creditos.png')}
+          texto="Créditos"
+          ativo={pathname === '/tabs/creditos'}
+          onPress={() => irPara('/tabs/creditos')}
         />
       </View>
     </View>
