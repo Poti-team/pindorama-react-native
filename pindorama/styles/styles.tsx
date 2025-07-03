@@ -24,7 +24,7 @@ export const styles = StyleSheet.create({
     gap: 40,
   },
   title: {
-    fontSize: 40,
+    fontSize: 36,
     fontFamily: 'IrishGrover-Regular', // Use o nome da fonte carregada
     color: '#642C08',
     textAlign: 'left',
