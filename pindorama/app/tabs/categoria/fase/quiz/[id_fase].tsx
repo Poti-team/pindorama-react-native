@@ -85,10 +85,21 @@ export default function QuizFasePage() {
           <Image source={require('@/assets/images/icons/setinha.png')} />
           <Text style={[styles.text, { marginLeft: 10, fontSize: 20, color: '#B89B7F' }]}>Voltar</Text>
         </Pressable>
-        <Text style={[styles.title, { fontSize: 32 }]}>{`Pergunta ${ordem}`}</Text>
+        <View style={styles.row}>
+          <Text style={[styles.title, { fontSize: 32 }]}>{`Pergunta ${ordem}`}</Text>
+          <Image
+            source={
+              alternativaSelecionada === null || alternativaSelecionada === perguntasDict[ordem]?.correta
+          ? require('@/assets/images/icons/coracao.png')
+          : require('@/assets/images/icons/coracao_partido.png')
+            }
+            style={{ width: 32, height: 32 }}
+            resizeMode="contain"
+          />
+        </View>
       </View>
       <View style={[styles.div, { flex: 1, justifyContent: 'space-between', gap: 20 }]}>
-        <Text style={[styles.text, styles.abz, {fontSize: 20}]}>{`${perguntasDict[ordem]?.enunciado}`}</Text>
+        <Text style={[styles.text, styles.abz, {fontSize: 18}]}>{`${perguntasDict[ordem]?.enunciado}`}</Text>
         <View style={[styles.div, {gap: 16}]}>
           {perguntasDict[ordem]?.alternativas?.map((alt: any, index: number) => {
             // index + 1 pois a resposta certa geralmente é 1-based
@@ -106,7 +117,10 @@ export default function QuizFasePage() {
                 style={[
                   styles.button,
                   styles.row,
-                  { paddingVertical: 8, paddingHorizontal: 12, gap: 8, width: '100%', justifyContent: 'space-between', opacity: alternativaSelecionada !== null && alternativaSelecionada !== index + 1 ? 0.6 : 1 }
+                  { paddingVertical: 8, paddingHorizontal: 12, gap: 8, width: '100%', justifyContent: 'space-between',
+                    opacity: alternativaSelecionada !== null && alternativaSelecionada !== index + 1 ? 0.6 : 1, 
+                    backgroundColor: alternativaSelecionada !== index + 1 ? '#EACA92' : alternativaSelecionada === perguntasDict[ordem]?.correta ? '#FFE192' : '#956046',
+                    borderColor: '#642C08', borderWidth: 2, borderRadius: 2}
                 ]}
                 disabled={alternativaSelecionada !== null}
                 onPress={async () => {
@@ -129,7 +143,8 @@ export default function QuizFasePage() {
                   }
                 }}
               >
-                <Text style={[styles.text, styles.abz, {fontSize: 13, fontWeight: 'bold', flex: 9, textAlign: 'left'}]}>{alt}</Text>
+                <Text style={[styles.text, styles.abz, {fontSize: 13, fontWeight: 'bold', flex: 9, textAlign: 'left',
+                   color: alternativaSelecionada === index + 1 && alternativaSelecionada !== perguntasDict[ordem]?.correta ? '#421D05' : '#642C08'}]}>{alt}</Text>
                 {icone ? (
                   <Image source={icone} style={{ width: 30, aspectRatio: 3/2 }} resizeMode='contain' />
                 ) : (
@@ -140,77 +155,77 @@ export default function QuizFasePage() {
           })}
         </View>
       </View>
-      <View style={[styles.div, { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }]}>
-        <Text style={[styles.text]}>{`Pergunta ${ordem} de ${total}`}</Text>
-        <Pressable
-          style={[styles.button, { width: 80, paddingVertical: 4, paddingHorizontal: 0, opacity: alternativaSelecionada === null ? 0 : 1 }]}
-          disabled={alternativaSelecionada === null}
-          onPress={async () => {
-            if (alternativaSelecionada !== perguntasDict[ordem]?.correta) {
-                router.back();
-            } else if (ordem < total) {
-                setOrdem(ordem + 1);
-            } else {
-                router.back();
-                router.back();
-                const usuario = await AsyncStorage.getItem('Usuario');
-                console.log('Usuário', usuario)
-                const usuarioData = usuario ? JSON.parse(usuario) : null;
-                const usuarioFaseData = await AsyncStorage.getItem('UsuarioFase');
-                let usuarioFaseArray = [];
-                if (usuarioFaseData) {
-                  usuarioFaseArray = JSON.parse(usuarioFaseData);
-                  if (!Array.isArray(usuarioFaseArray)) usuarioFaseArray = [];
-                }
-                if (!usuarioFaseArray.some((uf: any) => uf.id_fase === id_fase && uf.id_usuario === (usuarioData ? usuarioData.id : null))) {
-                    // Adiciona o usuário e fase ao array
-                    usuarioFaseArray.push({
-                    id_fase: id_fase,
-                    id_usuario: usuarioData ? usuarioData.id : null
-                    });
-                    await AsyncStorage.setItem('UsuarioFase', JSON.stringify(usuarioFaseArray));
-                    console.log(usuarioFaseArray);
-                }
-                    await checkConquista('fase');
-                    await checkConquista('categoria', fase.id_categoria);
-                    console.log('Fase concluída e registrada no cache local.');
-                    console.log('Iniciando registro no banco de dados...');
-                
-                if (usuarioData.id != 1) {
-                  // Se for o usuário de teste, não insere no banco
-                    try {
-                        const { data: usuarioFaseDb, error: selectError } = await supabase
-                            .from('UsuarioFase')
-                            .select('*')
-                            .eq('id_fase', id_fase)
-                            .eq('id_usuario', usuarioData ? usuarioData.id : null);
+      <View style={[styles.div, { flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center' }]}>
+        {/* Botão Reiniciar ou Finalizar */}
+        {(alternativaSelecionada !== perguntasDict[ordem]?.correta || ordem === total) && (
+          <Pressable
+            style={[
+              styles.button,
+              { width: 80, height: 34, paddingVertical: 4, paddingHorizontal: 0, opacity: alternativaSelecionada === null ? 0 : 1 }
+            ]}
+            disabled={alternativaSelecionada === null}
+            onPress={async () => {
+              if (alternativaSelecionada !== perguntasDict[ordem]?.correta) {
+          router.back();
+              } else if (ordem === total) {
+          router.back();
+          router.back();
+          const usuario = await AsyncStorage.getItem('Usuario');
+          const usuarioData = usuario ? JSON.parse(usuario) : null;
+          const usuarioFaseData = await AsyncStorage.getItem('UsuarioFase');
+          let usuarioFaseArray = [];
+          if (usuarioFaseData) {
+            usuarioFaseArray = JSON.parse(usuarioFaseData);
+            if (!Array.isArray(usuarioFaseArray)) usuarioFaseArray = [];
+          }
+          if (!usuarioFaseArray.some((uf: any) => uf.id_fase === id_fase && uf.id_usuario === (usuarioData ? usuarioData.id : null))) {
+            usuarioFaseArray.push({
+              id_fase: id_fase,
+              id_usuario: usuarioData ? usuarioData.id : null
+            });
+            await AsyncStorage.setItem('UsuarioFase', JSON.stringify(usuarioFaseArray));
+          }
+          await checkConquista('fase');
+          await checkConquista('categoria', fase.id_categoria);
+          if (usuarioData.id != 1) {
+            try {
+              const { data: usuarioFaseDb, error: selectError } = await supabase
+                .from('UsuarioFase')
+                .select('*')
+                .eq('id_fase', id_fase)
+                .eq('id_usuario', usuarioData ? usuarioData.id : null);
 
-                        if (selectError) {
-                            console.error('Erro ao buscar fase no banco de dados:', selectError.message);
-                        } else if (!usuarioFaseDb || usuarioFaseDb.length === 0) {
-                            const { error: insertError } = await supabase.from('UsuarioFase').insert([{
-                                id_fase: id_fase,
-                                id_usuario: usuarioData ? usuarioData.id : null
-                            }]);
-                            if (insertError) {
-                                console.error('Erro ao registrar fase no banco de dados:', insertError.message);
-                            } else {
-                                console.log('Fase concluída e registrada no banco de dados.');
-
-                            }
-                        } else {
-                            console.log('Usuário já possui fase registrada:', usuarioFaseDb);
-                        }
-                    } catch (e) {
-                        console.error('Erro inesperado ao acessar o banco de dados:', e);
-                    }
-                }
+              if (!usuarioFaseDb || usuarioFaseDb.length === 0) {
+                await supabase.from('UsuarioFase').insert([{
+            id_fase: id_fase,
+            id_usuario: usuarioData ? usuarioData.id : null
+                }]);
+              }
+            } catch (e) {
+              console.error('Erro inesperado ao acessar o banco de dados:', e);
             }
-          }}>
-              <Text style={[styles.text]}>
-                {alternativaSelecionada !== perguntasDict[ordem]?.correta ? 'Reiniciar' : ordem < total ? 'Próxima' : 'Finalizar'}
-              </Text>
-            </Pressable>
+          }
+              }
+            }}
+          >
+            <Text style={[styles.text]}>
+              {alternativaSelecionada !== perguntasDict[ordem]?.correta ? 'Reiniciar' : 'Finalizar'}
+            </Text>
+          </Pressable>
+        )}
+
+        {/* Botão Próxima */}
+        {alternativaSelecionada === perguntasDict[ordem]?.correta && ordem < total && (
+          <Pressable
+            style={[{
+              width: 80, height: 34, opacity: alternativaSelecionada === null ? 0 : 1, alignItems: 'center', justifyContent: 'center'
+            }]}
+            disabled={alternativaSelecionada === null}
+            onPress={() => { setOrdem(ordem + 1); setAlternativaSelecionada(null); }}
+          >
+            <Image source={require('@/assets/images/icons/proxima.png')} style={{ height: '100%', aspectRatio: 2 }} resizeMode="contain" />
+          </Pressable>
+        )}
       </View>
     </View>
   );
