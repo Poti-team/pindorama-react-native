@@ -6,7 +6,7 @@ const screenHeight = Dimensions.get('window').height;
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: '#FFF9E4',
     padding: 0,
@@ -20,7 +20,8 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 40,
     margin: 0,
-    width: screenWidth,
+    width: '100%',
+    maxWidth: 500,
     gap: 40,
   },
   title: {
@@ -70,28 +71,25 @@ export const styles = StyleSheet.create({
     width: '100%',
   },
   menu: {
-    width : screenWidth,
+    width : '100%',
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-around',
     backgroundColor: '#EACA92',
     paddingVertical: 16,
     gap: 40,
     paddingHorizontal: 40,
     zIndex: 1000,
-    position: 'fixed',
   },
   absolute: {
     position: 'absolute',
     zIndex: 0,
   },
   placa_home: {
-     flex: 3,
      width: '100%',
-     justifyContent:
-     'flex-start',
+     justifyContent: 'flex-start',
      alignItems: 'center',
      gap: 10,
-     paddingBottom: 150,
   },
   placa: {
     justifyContent: 'center',

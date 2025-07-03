@@ -1,6 +1,8 @@
-import { View, Pressable, Text, Image, ImageSourcePropType } from 'react-native';
+import { View, Pressable, Text, Image, ImageSourcePropType, Dimensions } from 'react-native';
 import { Slot, useRouter, usePathname } from 'expo-router';
 import { styles } from '@/styles/styles';
+
+const screenWidth = Dimensions.get('window').width;
 
 export default function LayoutComMenu() {
 
@@ -34,9 +36,15 @@ export default function LayoutComMenu() {
       {/* Menu inferior */}
       <View style={styles.menu}>
 
-        <View style={[styles.absolute,{top: -5}]}>
-          <Image source={require('@/assets/images/detalhe_menu.png')}/>
-        </View>
+
+          <Image source={require('@/assets/images/detalhe_menu.png')} resizeMode="repeat"
+                style={[styles.absolute, {
+                  top: -5,
+                  width: screenWidth,
+                  height: 20,
+                  resizeMode: 'contain',
+                }]}/>
+ 
 
         <BotaoMenu
           icone={require('@/assets/images/icons/mapa.png')}

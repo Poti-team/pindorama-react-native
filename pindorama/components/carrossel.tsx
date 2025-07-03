@@ -158,8 +158,26 @@ const animatedIndex = useRef(new Animated.Value(0)).current;
         <Image source={require('@/assets/images/nevoa.png')} style={[styles.absolute, {zIndex: 100000, bottom: 0, width: '50%', height: undefined, aspectRatio: 4}]}/>
         <Image source={require('@/assets/images/horizonte.png')} style={[styles.absolute, {zIndex: 100000, top: 0, width: '20%', height: undefined, aspectRatio: 1}]}/>
       </View>
-      <View style={[styles.div]}>
-            <Text style={[styles.text, {fontSize: 24}]}>{fases[index]?.nome || 'Carregando...'}</Text>
+      <View style={[styles.div, {paddingBottom: 16}]}>
+            <Text
+              style={[
+              styles.text,
+              {
+                fontSize: 24,
+                minHeight: 60,
+                textAlign: 'center',
+                textAlignVertical: 'center',
+                width: '100%',
+                justifyContent: 'center',
+                alignItems: 'center',
+                display: 'flex',
+              },
+              ]}
+              numberOfLines={2}
+              ellipsizeMode="tail"
+            >
+              {fases[index]?.nome || 'Carregando...'}
+            </Text>
             <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', width: '100%', marginTop: 10, gap: 16 }}>
                 <Pressable style={{ padding: 8 }} onPress={handlePrev} disabled={index === 0}>
                     <Image source={require('@/assets/images/seta_carrossel.png')} style={{ transform: [{ rotate: '180deg' }], opacity: index === 0 ? 0.3 : 1 }} />
