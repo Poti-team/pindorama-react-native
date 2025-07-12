@@ -4,15 +4,13 @@ import { Audio } from 'expo-av';
 export type TipoEfeitoSonoro = 
   | 'clique'
   | 'acerto'
-  | 'erro'
-  | 'inicio';
+  | 'erro';
 
 // Mapeamento dos arquivos de áudio
 const EFEITOS_SONOROS: Record<TipoEfeitoSonoro, any> = {
   clique: require('@/assets/audio/clique.mp3'),
   acerto: require('@/assets/audio/acerto.mp3'),
   erro: require('@/assets/audio/erro.mp3'),
-  inicio: require('@/assets/audio/inicio.mp3'),
 };
 
 class EfeitoSonoroManager {

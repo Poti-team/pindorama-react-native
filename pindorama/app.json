@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Pindorama",
-    "slug": "Pindorama",
+    "slug": "pindorama",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -29,6 +29,13 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "670ee2ae-615d-4912-a5c4-e73559424568"
+      }
+    },
+    "owner": "vinilu"
   }
 }
