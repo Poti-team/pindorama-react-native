@@ -130,23 +130,30 @@ export default function QuizFasePage() {
                 disabled={alternativaSelecionada !== null}
                 onPress={async () => {
                   setAlternativaSelecionada(index + 1);
+                  
+                  // Disparar som baseado na resposta
                   if (index + 1 === perguntasDict[ordem]?.correta) {
                     console.log('Resposta correta!');
                     tocarEfeito('acerto');
-                    const usuario = await AsyncStorage.getItem('Usuario');
-                    if (usuario) {
-                      const usuarioData = JSON.parse(usuario);
-                      usuarioData.respostas_certas = (usuarioData.respostas_certas || 0) + 1;
-                      await AsyncStorage.setItem('Usuario', JSON.stringify(usuarioData));
-                      if (usuarioData.id !== 1) {
-                        await supabase
-                        .from('Usuario')
-                        .update({ respostas_certas: usuarioData.respostas_certas })
-                        .eq('id', usuarioData.id);
+                    
+                    // Aguardar um pouco antes de executar outras operações
+                    setTimeout(async () => {
+                      const usuario = await AsyncStorage.getItem('Usuario');
+                      if (usuario) {
+                        const usuarioData = JSON.parse(usuario);
+                        usuarioData.respostas_certas = (usuarioData.respostas_certas || 0) + 1;
+                        await AsyncStorage.setItem('Usuario', JSON.stringify(usuarioData));
+                        if (usuarioData.id !== 1) {
+                          await supabase
+                          .from('Usuario')
+                          .update({ respostas_certas: usuarioData.respostas_certas })
+                          .eq('id', usuarioData.id);
+                        }
                       }
-                    }
-                    checkConquista('acerto');
+                      checkConquista('acerto');
+                    }, 100);
                   } else {
+                    console.log('Resposta incorreta!');
                     tocarEfeito('erro');
                   }
                 }}

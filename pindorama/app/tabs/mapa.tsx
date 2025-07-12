@@ -110,29 +110,19 @@ export default function Mapa() {
         <Pressable 
             style={{
                 position: 'absolute',
-                top: 100, // Abaixo do header
-                right: 40, // Respeitando a margem lateral
-                width: 40,
-                height: 40,
-                backgroundColor: '#956046',
-                borderRadius: 20,
-                justifyContent: 'center',
-                alignItems: 'center',
-                borderWidth: 2,
-                borderColor: '#642C08',
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.3,
-                shadowRadius: 4,
-                elevation: 5,
-                zIndex: 10, // Para ficar acima do mapa
+                top: 60,
+                right: 40,
             }}
             onPress={() => {
                 tocarEfeito('clique');
                 setMostrarConfig(true);
             }}
         >
-            <Text style={{ fontSize: 18, color: '#FFF' }}>⚙️</Text>
+            <Image 
+                source={require('@/assets/images/icons/config.png')} 
+                style={{ width: 40, height: 40 }}
+                resizeMode="contain"
+            />
         </Pressable>
 
         {/* Popups */}

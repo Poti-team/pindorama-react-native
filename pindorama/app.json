@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Pindorama",
-    "slug": "pindorama",
+    "slug": "Pindorama",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -14,9 +14,12 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#FFF9E4"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.potiguaras.pindorama",
+      "versionCode": 1,
+      "label": "Pindorama"
     },
     "web": {
       "bundler": "metro",

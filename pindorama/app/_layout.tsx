@@ -6,8 +6,16 @@ import { useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
 import { Dimensions } from 'react-native';
+import { AudioProvider, useAudioContext } from '@/contexts/AudioContext';
+import MusicaDefundo from '@/components/musicadefundo';
 
 const screenHeight = Dimensions.get('window').height;
+
+// Wrapper para usar o contexto de áudio
+function MusicaDefundoWrapper() {
+    const { musicaHabilitada, volumeMusica } = useAudioContext();
+    return <MusicaDefundo enabled={musicaHabilitada} volume={volumeMusica} />;
+}
 
 export default function Mosaico_top() {
     useEffect(() => {
@@ -30,29 +38,32 @@ export default function Mosaico_top() {
     }
     
     return (
-        <View style={[styles.container, { height: screenHeight }]}>
-            <StatusBar hidden /> 
-            <View style={{ zIndex: 10, width: '100%', height: 50 }}>
-              <Image
-                source={require('@/assets/images/mosaico_top.png')}
-                resizeMode="repeat"
-                style={{ 
-                  width: '100%', 
-                  height: '100%',
-                  resizeMode: 'contain',
-                }}
-              />
+        <AudioProvider>
+            <MusicaDefundoWrapper />
+            <View style={[styles.container, { height: screenHeight }]}>
+                <StatusBar hidden /> 
+                <View style={{ zIndex: 10, width: '100%', height: 50 }}>
+                  <Image
+                    source={require('@/assets/images/mosaico_top.png')}
+                    resizeMode="repeat"
+                    style={{ 
+                      width: '100%', 
+                      height: '100%',
+                      resizeMode: 'contain',
+                    }}
+                  />
+                </View>
+                <View style={[styles.absolute, {bottom: 0, left: 0}]}>
+                    <Image source={require('@/assets/images/sol.png')}/>
+                </View>
+                <View style={[styles.absolute, { top: 50, right: -25 }]}>
+                  <Image
+                    source={require('@/assets/images/sol.png')}
+                    style={{ transform: [{ rotate: '180deg' }] }}
+                  />
+                </View>
+                <Slot />
             </View>
-            <View style={[styles.absolute, {bottom: 0, left: 0}]}>
-                <Image source={require('@/assets/images/sol.png')}/>
-            </View>
-            <View style={[styles.absolute, { top: 50, right: -25 }]}>
-              <Image
-                source={require('@/assets/images/sol.png')}
-                style={{ transform: [{ rotate: '180deg' }] }}
-              />
-            </View>
-            <Slot />
-        </View>
+        </AudioProvider>
     );
 }
