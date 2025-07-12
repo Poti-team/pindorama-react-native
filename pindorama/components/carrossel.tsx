@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, Image, Pressable, Animated, ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styles } from '@/styles/styles';
+import { useEfeitoSonoro } from './efeitosonoro';
 
 const { router } = require('expo-router');
 
@@ -10,6 +11,7 @@ export default function Carrossel({ id_categoria }: { id_categoria: number }) {
   const [fasesDict, setFasesDict] = useState<{ [key: number]: { id: number; nome: string; status: string } }>({});
   const [index, setIndex] = useState(0);
   const [loading, setLoading] = useState(true);
+  const { tocarEfeito } = useEfeitoSonoro();
 
   // Carrega as fases ao abrir ou mudar categoria
   useEffect(() => {
@@ -75,8 +77,14 @@ export default function Carrossel({ id_categoria }: { id_categoria: number }) {
   };
 
   // Navegação do carrossel
-  const handlePrev = () => setIndex((i) => Math.max(i - 1, 0));
-  const handleNext = () => setIndex((i) => Math.min(i + 1, fases.length - 1));
+  const handlePrev = () => {
+    tocarEfeito('clique');
+    setIndex((i) => Math.max(i - 1, 0));
+  };
+  const handleNext = () => {
+    tocarEfeito('clique');
+    setIndex((i) => Math.min(i + 1, fases.length - 1));
+  };
 
 // Mostra até 4 fases a partir do index atual (inclusive), sem mostrar anteriores
 const maxFases = 5;
@@ -144,7 +152,10 @@ const animatedIndex = useRef(new Animated.Value(0)).current;
     >
       <Pressable
         disabled={!podeFocar}
-        onPress={() => setIndex(faseIndex)}
+        onPress={() => {
+          tocarEfeito('clique');
+          setIndex(faseIndex);
+        }}
       >
         <Image
           source={faseImages[status]}
@@ -186,6 +197,7 @@ const animatedIndex = useRef(new Animated.Value(0)).current;
                   style={[styles.button, { opacity: !fases[index] || fasesDict[fases[index].id]?.status === 'trancada' ? 0.6 : 1 }]}
                   onPress={() => {
                     if (fases[index] && fasesDict[fases[index].id]?.status !== 'trancada') {
+                      tocarEfeito('clique');
                       router.push(`/tabs/categoria/fase/${fases[index].id}`);
                     }
                   }}

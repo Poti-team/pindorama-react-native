@@ -3,6 +3,7 @@ import { View, Text, ScrollView, Image, Pressable, ImageBackground } from 'react
 import { useRouter, usePathname } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styles } from '@/styles/styles';
+import { useEfeitoSonoro } from '@/components/efeitosonoro';
 
 interface Conquista {
   id: number;
@@ -24,6 +25,7 @@ export default function ConquistasPage() {
   const [conquistasDict, setConquistasDict] = useState<{ [key: string]: Conquista[] }>({});
   const [conquistasConcluidas, setConquistasConcluidas] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
+  const { tocarEfeito } = useEfeitoSonoro();
 
   const irPara = (rota: Parameters<typeof router.push>[0]) => {
     if (rota !== pathname) {
@@ -110,7 +112,10 @@ export default function ConquistasPage() {
       <View style={[styles.header]}>
         <Pressable
           style={[styles.row, { width: 'auto' }]}
-          onPress={() => irPara('/home')}>
+          onPress={() => {
+            tocarEfeito('clique');
+            irPara('/home');
+          }}>
           <Image source={require('@/assets/images/icons/inicio.png')} />
           <Text style={[styles.text, { marginLeft: 10, fontSize: 20, color: '#B89B7F' }]}>Início</Text>
         </Pressable>

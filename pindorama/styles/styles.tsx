@@ -137,5 +137,14 @@ export const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     alignItems: 'flex-start',
     gap: 10,
+  },
+  checkbox: {
+    width: 24,
+    height: 24,
+    borderWidth: 2,
+    borderRadius: 4,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 10,
   }
 });

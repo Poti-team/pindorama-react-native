@@ -1,16 +1,18 @@
 import { View, Pressable, Text, Image, ImageSourcePropType, Dimensions } from 'react-native';
 import { Slot, useRouter, usePathname } from 'expo-router';
 import { styles } from '@/styles/styles';
+import { useEfeitoSonoro } from '@/components/efeitosonoro';
 
 const screenWidth = Dimensions.get('window').width;
 
 export default function LayoutComMenu() {
-
+    const { tocarEfeito } = useEfeitoSonoro();
     const router = useRouter();
     const pathname = usePathname();
   
       const irPara = (rota: Parameters<typeof router.push>[0]) => {
           if (rota !== pathname) {
+              tocarEfeito('clique');
               router.push(rota);
           }
       }

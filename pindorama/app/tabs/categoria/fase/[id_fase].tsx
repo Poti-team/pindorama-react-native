@@ -3,11 +3,13 @@ import { View, Text, ActivityIndicator, Image, ImageBackground, Pressable } from
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styles } from '@/styles/styles';
+import { useEfeitoSonoro } from '@/components/efeitosonoro';
 
 export default function FasePage() {
   const { id_fase } = useLocalSearchParams();
   const [fase, setFase] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
+  const { tocarEfeito } = useEfeitoSonoro();
   const router = useRouter();
 
   const [paginas, setPaginas] = useState<any[]>([]);
@@ -78,7 +80,10 @@ export default function FasePage() {
   return (
     <View style={[styles.conteudo, { justifyContent: 'space-between', paddingBottom: 40 }]}>
         <View style={[styles.header]}>
-            <Pressable style={[styles.row, { width: 'auto' }]} onPress={() => router.back()}>
+            <Pressable style={[styles.row, { width: 'auto' }]} onPress={() => {
+                tocarEfeito('clique');
+                router.back();
+            }}>
                 <Image source={require('@/assets/images/icons/setinha.png')} />
                 <Text style={[styles.text, { marginLeft: 10, fontSize: 20, color: '#B89B7F' }]}>Voltar</Text>
             </Pressable>
@@ -104,17 +109,25 @@ export default function FasePage() {
         <View style={[styles.div, {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}]}>
             <Pressable 
                 style={[styles.button, { width: 80, paddingHorizontal: 0, paddingVertical: 4, opacity: ordem <= 1 ? 0 : 1 }]} disabled={ordem <= 1}
-                onPress={() => {if (ordem > 1) { setOrdem(ordem - 1) }}}>
+                onPress={() => {
+                    if (ordem > 1) { 
+                        tocarEfeito('clique');
+                        setOrdem(ordem - 1);
+                    }
+                }}>
                 <Text style={[styles.text]}>Anterior</Text>
             </Pressable>
             <Text style={[styles.text]}>{`Página ${ordem} de ${Object.keys(paginasDict).length}`}</Text>
             <Pressable 
                 style={[styles.button, { width: 80, paddingVertical: 4, paddingHorizontal: 0 }]}
-                onPress={() => {if (ordem < Object.keys(paginasDict).length) {setOrdem(ordem + 1) }
-                else {
-                    // Navegar para o quiz
-                    router.push(`/tabs/categoria/fase/quiz/${fase.id}` as any);
-                }
+                onPress={() => {
+                    tocarEfeito('clique');
+                    if (ordem < Object.keys(paginasDict).length) {
+                        setOrdem(ordem + 1);
+                    } else {
+                        // Navegar para o quiz
+                        router.push(`/tabs/categoria/fase/quiz/${fase.id}` as any);
+                    }
                 }}>
                 <Text style={[styles.text]}>{ordem < Object.keys(paginasDict).length ? `Próximo` : 'Quiz'}</Text>
             </Pressable>

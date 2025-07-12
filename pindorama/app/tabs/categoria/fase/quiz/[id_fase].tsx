@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styles } from '@/styles/styles';
 import { supabase } from '@/services/supabase';
 import { checkConquista } from '@/components/checkconquista';
+import { useEfeitoSonoro } from '@/components/efeitosonoro';
 
 export default function QuizFasePage() {
   const { id_fase: id_fase_param } = useLocalSearchParams();
@@ -16,6 +17,7 @@ export default function QuizFasePage() {
   const [alternativaSelecionada, setAlternativaSelecionada] = useState<number | null>(null);
   const router = useRouter();
   const [fase, setFase] = useState<any | null>(null);
+  const { tocarEfeito } = useEfeitoSonoro();
 
   useEffect(() => {
     const fetchFase = async () => {
@@ -81,7 +83,10 @@ export default function QuizFasePage() {
   return (
     <View style={[styles.conteudo, {paddingBottom: 40, justifyContent: 'space-between'}]}>
       <View style={styles.header}>
-        <Pressable style={[styles.row, { width: 'auto' }]} onPress={() => router.back()}>
+        <Pressable style={[styles.row, { width: 'auto' }]} onPress={() => {
+          tocarEfeito('clique');
+          router.back();
+        }}>
           <Image source={require('@/assets/images/icons/setinha.png')} />
           <Text style={[styles.text, { marginLeft: 10, fontSize: 20, color: '#B89B7F' }]}>Voltar</Text>
         </Pressable>
@@ -127,6 +132,7 @@ export default function QuizFasePage() {
                   setAlternativaSelecionada(index + 1);
                   if (index + 1 === perguntasDict[ordem]?.correta) {
                     console.log('Resposta correta!');
+                    tocarEfeito('acerto');
                     const usuario = await AsyncStorage.getItem('Usuario');
                     if (usuario) {
                       const usuarioData = JSON.parse(usuario);
@@ -140,6 +146,8 @@ export default function QuizFasePage() {
                       }
                     }
                     checkConquista('acerto');
+                  } else {
+                    tocarEfeito('erro');
                   }
                 }}
               >
@@ -165,6 +173,7 @@ export default function QuizFasePage() {
             ]}
             disabled={alternativaSelecionada === null}
             onPress={async () => {
+              tocarEfeito('clique');
               if (alternativaSelecionada !== perguntasDict[ordem]?.correta) {
           router.back();
               } else if (ordem === total) {
@@ -221,7 +230,11 @@ export default function QuizFasePage() {
               width: 80, height: 34, opacity: alternativaSelecionada === null ? 0 : 1, alignItems: 'center', justifyContent: 'center'
             }]}
             disabled={alternativaSelecionada === null}
-            onPress={() => { setOrdem(ordem + 1); setAlternativaSelecionada(null); }}
+            onPress={() => { 
+              tocarEfeito('clique');
+              setOrdem(ordem + 1); 
+              setAlternativaSelecionada(null); 
+            }}
           >
             <Image source={require('@/assets/images/icons/proxima.png')} style={{ height: '100%', aspectRatio: 2 }} resizeMode="contain" />
           </Pressable>

@@ -7,6 +7,7 @@ import 'react-native-url-polyfill/auto';
 
 import { supabase } from '@/services/supabase';
 import { styles } from '@/styles/styles';
+import { useEfeitoSonoro } from '@/components/efeitosonoro';
 
 export default function Auth() {
   const [email, setEmail] = useState('');
@@ -17,6 +18,7 @@ export default function Auth() {
   const [login, setLogin] = useState(true);
   const [ready, setReady] = useState(false);
   const router = useRouter();
+  const { tocarEfeito } = useEfeitoSonoro();
   
   const [userSession, setUserSession] = useState<Session | null>(null);
   
@@ -307,7 +309,10 @@ export default function Auth() {
             {/* Botão principal */}
             <Pressable
               style={styles.buttonAuth}
-              onPress={isLogin ? signInWithEmail : signUpWithEmail}
+              onPress={() => {
+                tocarEfeito('clique');
+                isLogin ? signInWithEmail() : signUpWithEmail();
+              }}
               disabled={loading || 
                 !email || !senha || 
                 (isSignup && (senha.length < 8 || !username))
@@ -322,7 +327,10 @@ export default function Auth() {
           {/* Botão alternar modo */}
           <Pressable 
             style={{ width: '100%' }} 
-            onPress={() => setLogin(!login)}
+            onPress={() => {
+              tocarEfeito('clique');
+              setLogin(!login);
+            }}
           >
             <Text style={[styles.buttonText, { textAlign: 'center', fontSize: 16, textDecorationColor: '#642C08', textDecorationLine: 'underline' }]}>
               {isLogin ? 'Ainda não tem uma conta? Crie uma!' : 'Já tem uma conta? Faça login!'}
@@ -339,6 +347,7 @@ export default function Auth() {
             <Pressable
               style={{ width: '100%' }}
               onPress={async () => {
+                tocarEfeito('clique');
                 setLoading(true);
                 await carregarDados();
                 await carregarDadosUsuario();

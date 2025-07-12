@@ -6,10 +6,21 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { styles } from '@/styles/styles';
 import { supabase } from '@/services/supabase';
+import { ConfigPopup } from '@/components/config';
+import { useEfeitoSonoro } from '@/components/efeitosonoro';
 
 export default function Home() {
+    const [mostrarConfig, setMostrarConfig] = useState(false);
+    const { tocarEfeito } = useEfeitoSonoro();
     const router = useRouter();
+    
+    // Toca som de início ao carregar a página
+    useEffect(() => {
+        tocarEfeito('inicio');
+    }, []);
+    
     const irPara = (rota: Parameters<typeof router.push>[0]) => {
+        tocarEfeito('clique');
         router.push(rota);
     };
 
@@ -72,6 +83,8 @@ export default function Home() {
                         { alignItems: 'center', justifyContent: 'center', width: '80%' }
                     ]}
                     onPress={async () => {
+                        tocarEfeito('clique');
+                        
                         // Desloga do Supabase
                         await supabase.auth.signOut();
                         
@@ -95,6 +108,39 @@ export default function Home() {
                 </Pressable>
             </View>
         </ImageBackground>
+        
+        {/* Botão de Configurações - Canto Superior Direito */}
+        <Pressable 
+            style={{
+                position: 'absolute',
+                top: 60, // Respeitando a margem superior
+                right: 40, // Respeitando a margem lateral
+                width: 40,
+                height: 40,
+                backgroundColor: '#956046',
+                borderRadius: 20,
+                justifyContent: 'center',
+                alignItems: 'center',
+                borderWidth: 2,
+                borderColor: '#642C08',
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.3,
+                shadowRadius: 4,
+                elevation: 5,
+            }}
+            onPress={() => {
+                tocarEfeito('clique');
+                setMostrarConfig(true);
+            }}
+        >
+            <Text style={{ fontSize: 20, color: '#FFF' }}>⚙️</Text>
+        </Pressable>
+
+        {/* Popup de Configurações */}
+        {mostrarConfig && (
+            <ConfigPopup onClose={() => setMostrarConfig(false)} />
+        )}
     </View>
     )
 }
