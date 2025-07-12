@@ -3,10 +3,12 @@ import { View, Text, Image, Pressable, ScrollView } from "react-native";
 import {styles} from "@/styles/styles";
 import { useRouter, usePathname } from "expo-router";
 import { LinearGradient } from 'expo-linear-gradient';
+import { useEfeitoSonoro } from '@/components/efeitosonoro';
 
 export default function CreditosPage() {
     const router = useRouter();
     const pathname = usePathname();
+    const { tocarEfeito } = useEfeitoSonoro();
     const irPara = (rota: Parameters<typeof router.push>[0]) => {
         if (rota !== pathname) {
             router.push(rota);
@@ -17,7 +19,10 @@ export default function CreditosPage() {
             <View style={[styles.header]}>
                         <Pressable
                             style={[styles.row, {width: 'auto'}]} 
-                            onPress={() => irPara('/home')}>
+                            onPress={() => {
+                                tocarEfeito('clique');
+                                irPara('/home');
+                            }}>
             
                             <Image source={require('@/assets/images/icons/inicio.png')} />
                             <Text style={[styles.text, {marginLeft: 10, fontSize: 20, color: '#B89B7F'}]}>Início</Text>

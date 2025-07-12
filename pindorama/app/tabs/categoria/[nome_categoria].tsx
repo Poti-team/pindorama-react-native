@@ -5,10 +5,12 @@ import { styles } from '@/styles/styles';
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
 import Carrossel from '@/components/carrossel';
+import { useEfeitoSonoro } from '@/components/efeitosonoro';
 
 export default function CategoriaPage() {
   const { nome_categoria } = useLocalSearchParams();
   const [categoria, setCategoria] = useState<any | null>(null);
+  const { tocarEfeito } = useEfeitoSonoro();
 
   const router = useRouter();
 
@@ -31,7 +33,10 @@ export default function CategoriaPage() {
             <View style={[styles.header]}>
                 <Pressable
                     style={[styles.row, {width: 'auto', alignItems: 'baseline'}]} 
-                    onPress={() => router.back()}>
+                    onPress={() => {
+                        tocarEfeito('clique');
+                        router.back();
+                    }}>
     
                     <Image source={require('@/assets/images/icons/setinha.png')} />
                     <Text style={[styles.text, {marginLeft: 10, fontSize: 20, color: '#B89B7F'}]}>Voltar</Text>
