@@ -67,6 +67,8 @@ styles/               # Estilos centralizados
 
 ### 🚀 Instalação
 
+0. **Abra a pasta pindorama**
+
 1. **Instale as dependências**
    ```bash
    npm install
